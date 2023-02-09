@@ -1,4 +1,5 @@
 import os
+import jwt
 from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
@@ -20,9 +21,25 @@ class Comment(db.Model):
     first_name = db.Column(db.String(20), nullable=False)
     last_name = db.Column(db.String(20), nullable=False)
 
+def authenticate_user(request):
+    token = request.headers.get("Authorization", None)
+    if not token:
+        return None
+    try:
+        decoded_token = jwt.decode(token, os.getenv("JWT_SECRET"), algorithms=["HS256"])
+        user_id = decoded_token.get("user_id", None)
+        if not user_id:
+            return None
+        return user_id
+    except jwt.exceptions.DecodeError:
+        return None
 
 @app.route("/comments/<int:case_id>", methods=["GET", "POST"])
 def comments(case_id=None):
+    user_id = authenticate_user(request)
+    if not user_id:
+        return jsonify({"errors": ["Not authorized"]}), 401
+
     if request.method == "GET":
         # Fetch comments for a specific case
         comments = Comment.query.filter_by(case_id=case_id).all()
@@ -49,7 +66,7 @@ def comments(case_id=None):
         )
         db.session.add(new_comment)
         db.session.commit()
-        return jsonify({"message": "Comment added successfully."})
+        return jsonify({"message": "Comment added successfully"}), 201
 
 if __name__ == '__main__':
     app.run(debug=True)
