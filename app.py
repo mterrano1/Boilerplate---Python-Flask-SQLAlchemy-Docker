@@ -3,12 +3,14 @@ from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
 from flask_cors import CORS
+from flask_migrate import Migrate
 
 load_dotenv()
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL")
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 CORS(app)
 
 class Comment(db.Model):
@@ -18,8 +20,8 @@ class Comment(db.Model):
     first_name = db.Column(db.String(20), nullable=False)
     last_name = db.Column(db.String(20), nullable=False)
 
-@app.route("/cases/<int:case_id>/comments", methods=["GET", "POST"])
-def comments(case_id):
+@app.route("/comments/<int:case_id>", methods=["GET", "POST"])
+def comments(case_id=None):
     if request.method == "GET":
         # Fetch comments for a specific case
         comments = Comment.query.filter_by(case_id=case_id).all()
