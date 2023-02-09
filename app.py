@@ -20,6 +20,7 @@ class Comment(db.Model):
     first_name = db.Column(db.String(20), nullable=False)
     last_name = db.Column(db.String(20), nullable=False)
 
+
 @app.route("/comments/<int:case_id>", methods=["GET", "POST"])
 def comments(case_id=None):
     if request.method == "GET":
@@ -37,9 +38,12 @@ def comments(case_id=None):
     if request.method == "POST":
         # Save a new comment to the database
         comment_data = request.get_json()
+        comment = comment_data.get("comment")
+        if not comment or comment.strip() == "":
+            return jsonify({"errors": ["Comment is required"]}), 400
         new_comment = Comment(
             case_id=comment_data["case_id"],
-            comment=comment_data["comment"],
+            comment=comment,
             first_name=comment_data["first_name"],
             last_name=comment_data["last_name"]
         )
