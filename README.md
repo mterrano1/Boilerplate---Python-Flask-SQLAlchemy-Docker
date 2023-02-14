@@ -23,17 +23,17 @@ To run the API, you'll need to have Docker installed on your machine.
 
 1. Clone the repository:
 ```console
-$ git clone https://github.com/your-username/case-tracker-api.git
+$ git clone https://github.com/mterrano1/case-tracker-flask
 ```
 
 2. Build the Docker image:
 ```console
-$ docker build -t case-tracker-api .
+$ docker build -t case-tracker-flask .
 ```
 
 3. Run the Docker container:
 ```console
-$ docker run -p 5000:5000 case-tracker-api
+$ docker run -p 5000:5000 flask
 ```
 
 ## Usage
