@@ -6,3 +6,4 @@ flask_sqlalchemy
 flask-cors
 flask-migrate
 pyjwt
+gunicorn
